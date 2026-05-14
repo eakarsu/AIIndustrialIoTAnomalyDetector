@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const auth = require('../middleware/auth');
 const axios = require('axios');
+const { aiRateLimiter, callWithRetry } = require('../middleware/aiHelpers');
 
 router.get('/', auth, async (req, res) => {
   try {
@@ -80,7 +81,7 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-router.post('/:id/predict', auth, async (req, res) => {
+router.post('/:id/predict', auth, aiRateLimiter, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT pm.*, e.name as equipment_name, e.type as equipment_type, e.status as equipment_status,
@@ -115,39 +116,61 @@ Current Prediction:
 Recent Anomalies:
 ${recentAnomalies.rows.map(a => `- ${a.type} (${a.severity}): ${a.description || 'No description'}`).join('\n') || 'None'}
 
-Provide your prediction in the following format:
-Failure Prediction Summary:
-[Updated assessment of the predicted failure]
+Return JSON with this exact structure:
+{
+  "failure_probability": <number 0-100>,
+  "predicted_failure_date": "<ISO date string>",
+  "maintenance_type": "preventive|corrective|replacement",
+  "parts_needed": ["part1", "part2"],
+  "estimated_cost": <number>,
+  "priority": "low|medium|high|critical"
+}`;
 
-Probability Assessment:
-[Updated probability and confidence level]
+    const aiResponse = await callWithRetry(() =>
+      axios.post(process.env.OPENROUTER_BASE_URL + '/chat/completions', {
+        model: process.env.OPENROUTER_MODEL || 'anthropic/claude-3-5-sonnet-20241022',
+        messages: [{ role: 'user', content: prompt }],
+      }, {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      })
+    );
 
-Timeline Analysis:
-[Expected timeline for potential failure]
+    const rawContent = aiResponse.data.choices[0].message.content;
+    let structured = null;
+    try {
+      const jsonMatch = rawContent.match(/```(?:json)?\s*([\s\S]*?)```/) || rawContent.match(/(\{[\s\S]*\})/);
+      const jsonStr = jsonMatch ? jsonMatch[1].trim() : rawContent.trim();
+      structured = JSON.parse(jsonStr);
+    } catch (e) {
+      structured = null;
+    }
 
-Contributing Factors:
-[Key factors contributing to potential failure]
-
-Recommended Preventive Actions:
-[Specific maintenance actions to prevent or delay failure]
-
-Cost-Benefit Analysis:
-[Estimated cost of prevention vs. failure]`;
-
-    const aiResponse = await axios.post(process.env.OPENROUTER_BASE_URL + '/chat/completions', {
-      model: process.env.OPENROUTER_MODEL,
-      messages: [{ role: 'user', content: prompt }],
-    }, {
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const aiAnalysis = aiResponse.data.choices[0].message.content;
+    const aiAnalysis = structured ? JSON.stringify(structured) : rawContent;
     await pool.query('UPDATE predictive_maintenance SET ai_analysis = $1 WHERE id = $2', [aiAnalysis, req.params.id]);
 
-    res.json({ ...record, ai_analysis: aiAnalysis });
+    // Auto-create maintenance record if failure_probability > 75
+    if (structured && structured.failure_probability > 75) {
+      try {
+        await pool.query(
+          `INSERT INTO maintenance (equipment_id, type, status, description, scheduled_date)
+           VALUES ($1, $2, 'scheduled', $3, $4)
+           ON CONFLICT DO NOTHING`,
+          [
+            record.equipment_id,
+            structured.maintenance_type || 'preventive',
+            `Auto-scheduled: AI predicted ${structured.failure_probability}% failure probability. Parts needed: ${(structured.parts_needed || []).join(', ')}`,
+            structured.predicted_failure_date || null,
+          ]
+        );
+      } catch (maintErr) {
+        console.error('Auto-maintenance creation error:', maintErr);
+      }
+    }
+
+    res.json({ ...record, ai_analysis: aiAnalysis, structured });
   } catch (err) {
     console.error('AI predict error:', err);
     res.status(500).json({ error: 'AI prediction failed: ' + (err.response?.data?.error?.message || err.message) });

@@ -79,6 +79,11 @@ export default function Navbar() {
             Energy Optimization
             <span className="ai-badge">AI</span>
           </NavLink>
+          <NavLink to="/advanced-ai" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
+            <FiCpu className="nav-icon" />
+            Advanced AI
+            <span className="ai-badge">AI</span>
+          </NavLink>
         </div>
 
         <div className="sidebar-footer">
@@ -87,7 +92,30 @@ export default function Navbar() {
             Logout
           </button>
         </div>
-      </nav>
+      
+        {/* // === Batch 04 Gaps & Frontend Mounts === */}
+        <div style={{ borderTop: '1px solid #eee', marginTop: '0.5rem', paddingTop: '0.5rem' }}>
+        <a href="/cf-agentic-maintenance-coordinator-predicti" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Agentic maintenance coordinator predicti</a>
+        <a href="/cf-federated-anomaly-detection-trained-on-a" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Federated anomaly detection trained on a</a>
+        <a href="/cf-vibration-acoustic-monitoring-for-early-" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Vibration + acoustic monitoring for earl</a>
+        <a href="/cf-supply-chain-disruption-prediction-corre" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Supply-chain disruption prediction corre</a>
+        <a href="/cf-energy-efficiency-optimizer-recommending" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Energy efficiency optimizer recommending</a>
+        <a href="/cf-cross-equipment-correlation-extending-co" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Cross-equipment correlation extending co</a>
+        <a href="/gap-no-detect-anomaly-endpoint-with-ml" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No /detect-anomaly endpoint with ML mode</a>
+        <a href="/gap-no-predict-failure-endpoint" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No predict-failure endpoint</a>
+        <a href="/gap-no-root-cause-ai-synthesis" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No root-cause AI synthesis</a>
+        <a href="/gap-no-energy-optimization-ai" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No energy-optimization AI</a>
+        <a href="/gap-no-equipment-health-score-ai" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No equipment health-score AI</a>
+        <a href="/gap-no-maintenance-recommendation-ai" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No maintenance-recommendation AI</a>
+        <a href="/gap-no-mqtt-broker-only-http-ingestion" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No MQTT broker (only HTTP ingestion)</a>
+        <a href="/gap-no-real-plcscada-integration-only-integr" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No real PLC/SCADA integration (only inte</a>
+        <a href="/gap-no-technician-dispatch-mobile-workflow" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No technician dispatch / mobile workflow</a>
+        <a href="/gap-no-sla-tracking" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No SLA tracking</a>
+        <a href="/gap-no-webhook-surface" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No webhook surface</a>
+        <a href="/gap-no-notifications-module-0-references" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No notifications module (0 references)</a>
+        <a href="/gap-no-websocket-real-time-telemetry-stream" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No WebSocket real-time telemetry stream</a>
+        </div>
+</nav>
     </>
   );
 }

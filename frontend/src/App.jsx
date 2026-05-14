@@ -12,6 +12,28 @@ import Predictive from './pages/Predictive';
 import RootCause from './pages/RootCause';
 import HealthScore from './pages/HealthScore';
 import Energy from './pages/Energy';
+import AdvancedAITools from './pages/AdvancedAITools';
+
+// === Batch 04 Gaps & Frontend Mounts ===
+import CfAgenticMaintenanceCoordinatorPredicti from './pages/CfAgenticMaintenanceCoordinatorPredicti';
+import CfFederatedAnomalyDetectionTrainedOnA from './pages/CfFederatedAnomalyDetectionTrainedOnA';
+import CfVibrationAcousticMonitoringForEarly from './pages/CfVibrationAcousticMonitoringForEarly';
+import CfSupplyChainDisruptionPredictionCorre from './pages/CfSupplyChainDisruptionPredictionCorre';
+import CfEnergyEfficiencyOptimizerRecommending from './pages/CfEnergyEfficiencyOptimizerRecommending';
+import CfCrossEquipmentCorrelationExtendingCo from './pages/CfCrossEquipmentCorrelationExtendingCo';
+import GapNoDetectAnomalyEndpointWithMl from './pages/GapNoDetectAnomalyEndpointWithMl';
+import GapNoPredictFailureEndpoint from './pages/GapNoPredictFailureEndpoint';
+import GapNoRootCauseAiSynthesis from './pages/GapNoRootCauseAiSynthesis';
+import GapNoEnergyOptimizationAi from './pages/GapNoEnergyOptimizationAi';
+import GapNoEquipmentHealthScoreAi from './pages/GapNoEquipmentHealthScoreAi';
+import GapNoMaintenanceRecommendationAi from './pages/GapNoMaintenanceRecommendationAi';
+import GapNoMqttBrokerOnlyHttpIngestion from './pages/GapNoMqttBrokerOnlyHttpIngestion';
+import GapNoRealPlcscadaIntegrationOnlyIntegr from './pages/GapNoRealPlcscadaIntegrationOnlyIntegr';
+import GapNoTechnicianDispatchMobileWorkflow from './pages/GapNoTechnicianDispatchMobileWorkflow';
+import GapNoSlaTracking from './pages/GapNoSlaTracking';
+import GapNoWebhookSurface from './pages/GapNoWebhookSurface';
+import GapNoNotificationsModule0References from './pages/GapNoNotificationsModule0References';
+import GapNoWebsocketRealTimeTelemetryStream from './pages/GapNoWebsocketRealTimeTelemetryStream';
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -53,6 +75,28 @@ export default function App() {
         <Route path="/rootcause" element={<ProtectedRoute><RootCause /></ProtectedRoute>} />
         <Route path="/health" element={<ProtectedRoute><HealthScore /></ProtectedRoute>} />
         <Route path="/energy" element={<ProtectedRoute><Energy /></ProtectedRoute>} />
+        <Route path="/advanced-ai" element={<ProtectedRoute><AdvancedAITools /></ProtectedRoute>} />
+          {/* // === Batch 04 Gaps & Frontend Mounts === */}
+          <Route path="/cf-agentic-maintenance-coordinator-predicti" element={<CfAgenticMaintenanceCoordinatorPredicti />} />
+          <Route path="/cf-federated-anomaly-detection-trained-on-a" element={<CfFederatedAnomalyDetectionTrainedOnA />} />
+          <Route path="/cf-vibration-acoustic-monitoring-for-early-" element={<CfVibrationAcousticMonitoringForEarly />} />
+          <Route path="/cf-supply-chain-disruption-prediction-corre" element={<CfSupplyChainDisruptionPredictionCorre />} />
+          <Route path="/cf-energy-efficiency-optimizer-recommending" element={<CfEnergyEfficiencyOptimizerRecommending />} />
+          <Route path="/cf-cross-equipment-correlation-extending-co" element={<CfCrossEquipmentCorrelationExtendingCo />} />
+          <Route path="/gap-no-detect-anomaly-endpoint-with-ml" element={<GapNoDetectAnomalyEndpointWithMl />} />
+          <Route path="/gap-no-predict-failure-endpoint" element={<GapNoPredictFailureEndpoint />} />
+          <Route path="/gap-no-root-cause-ai-synthesis" element={<GapNoRootCauseAiSynthesis />} />
+          <Route path="/gap-no-energy-optimization-ai" element={<GapNoEnergyOptimizationAi />} />
+          <Route path="/gap-no-equipment-health-score-ai" element={<GapNoEquipmentHealthScoreAi />} />
+          <Route path="/gap-no-maintenance-recommendation-ai" element={<GapNoMaintenanceRecommendationAi />} />
+          <Route path="/gap-no-mqtt-broker-only-http-ingestion" element={<GapNoMqttBrokerOnlyHttpIngestion />} />
+          <Route path="/gap-no-real-plcscada-integration-only-integr" element={<GapNoRealPlcscadaIntegrationOnlyIntegr />} />
+          <Route path="/gap-no-technician-dispatch-mobile-workflow" element={<GapNoTechnicianDispatchMobileWorkflow />} />
+          <Route path="/gap-no-sla-tracking" element={<GapNoSlaTracking />} />
+          <Route path="/gap-no-webhook-surface" element={<GapNoWebhookSurface />} />
+          <Route path="/gap-no-notifications-module-0-references" element={<GapNoNotificationsModule0References />} />
+          <Route path="/gap-no-websocket-real-time-telemetry-stream" element={<GapNoWebsocketRealTimeTelemetryStream />} />
+
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </AppLayout>
