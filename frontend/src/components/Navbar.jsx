@@ -84,6 +84,12 @@ export default function Navbar() {
             Advanced AI
             <span className="ai-badge">AI</span>
           </NavLink>
+
+          <div className="nav-section-label">Custom</div>
+          <NavLink to="/custom-views" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={closeSidebar}>
+            <FiGrid className="nav-icon" />
+            Industrial Views
+          </NavLink>
         </div>
 
         <div className="sidebar-footer">

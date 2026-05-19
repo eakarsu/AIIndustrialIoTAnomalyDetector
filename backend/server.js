@@ -61,6 +61,9 @@ app.use('/api/gap-no-webhook-surface', route_gap_no_webhook_surface);
 app.use('/api/gap-no-notifications-module-0-references', route_gap_no_notifications_module_0_references);
 app.use('/api/gap-no-websocket-real-time-telemetry-stream', route_gap_no_websocket_real_time_telemetry_stream);
 
+// === Custom Views (Industrial Views) — mounted before any 404 handler ===
+app.use('/api/custom-views', require('./routes/customViews'));
+
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
 });

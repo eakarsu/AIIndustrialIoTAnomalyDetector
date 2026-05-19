@@ -13,6 +13,7 @@ import RootCause from './pages/RootCause';
 import HealthScore from './pages/HealthScore';
 import Energy from './pages/Energy';
 import AdvancedAITools from './pages/AdvancedAITools';
+import CustomViewsPage from './pages/CustomViewsPage';
 
 // === Batch 04 Gaps & Frontend Mounts ===
 import CfAgenticMaintenanceCoordinatorPredicti from './pages/CfAgenticMaintenanceCoordinatorPredicti';
@@ -76,6 +77,7 @@ export default function App() {
         <Route path="/health" element={<ProtectedRoute><HealthScore /></ProtectedRoute>} />
         <Route path="/energy" element={<ProtectedRoute><Energy /></ProtectedRoute>} />
         <Route path="/advanced-ai" element={<ProtectedRoute><AdvancedAITools /></ProtectedRoute>} />
+        <Route path="/custom-views" element={<ProtectedRoute><CustomViewsPage /></ProtectedRoute>} />
           {/* // === Batch 04 Gaps & Frontend Mounts === */}
           <Route path="/cf-agentic-maintenance-coordinator-predicti" element={<CfAgenticMaintenanceCoordinatorPredicti />} />
           <Route path="/cf-federated-anomaly-detection-trained-on-a" element={<CfFederatedAnomalyDetectionTrainedOnA />} />
