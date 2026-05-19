@@ -3,17 +3,29 @@ const router = express.Router();
 const pool = require('../db');
 const auth = require('../middleware/auth');
 
-// GET /api/alerts
+// GET /api/alerts (paginated)
 router.get('/', auth, async (req, res) => {
   try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const offset = (page - 1) * limit;
+
+    const countResult = await pool.query('SELECT COUNT(*) FROM alerts');
+    const total = parseInt(countResult.rows[0].count);
+
     const result = await pool.query(`
       SELECT a.*, e.name as equipment_name, s.name as sensor_name
       FROM alerts a
       LEFT JOIN equipment e ON a.equipment_id = e.id
       LEFT JOIN sensors s ON a.sensor_id = s.id
       ORDER BY a.created_at DESC
-    `);
-    res.json(result.rows);
+      LIMIT $1 OFFSET $2
+    `, [limit, offset]);
+
+    res.json({
+      data: result.rows,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    });
   } catch (err) {
     console.error('Get alerts error:', err);
     res.status(500).json({ error: 'Internal server error' });

@@ -8,6 +8,7 @@ const apiCall = async (url, options = {}) => {
   const token = localStorage.getItem('token');
   const res = await fetch(`${API_BASE}${url}`, { ...options, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers } });
   if (res.status === 401) { localStorage.removeItem('token'); window.location.href = '/'; return; }
+  if (res.status === 429) { toast.error('Rate limit reached. Please try again later.'); return null; }
   return res.json();
 };
 
@@ -21,10 +22,24 @@ export default function Alerts() {
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(defaultForm);
   const [editing, setEditing] = useState(false);
+  const [pagination, setPagination] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(20);
 
-  useEffect(() => { loadItems(); }, []);
+  useEffect(() => { loadItems(); }, [page]);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => { loadItems(); }, 30000);
+    return () => clearInterval(interval);
+  }, [page]);
+
   const loadItems = async () => {
-    try { const data = await apiCall('/alerts'); setItems(Array.isArray(data) ? data : []); }
+    try {
+      const data = await apiCall(`/alerts?page=${page}&limit=${limit}`);
+      if (data && data.data) { setItems(data.data); setPagination(data.pagination); }
+      else if (Array.isArray(data)) setItems(data);
+    }
     catch { toast.error('Failed to load alerts'); }
     finally { setLoading(false); }
   };
@@ -85,26 +100,37 @@ export default function Alerts() {
       </div>
       <div className="table-container">
         {items.length === 0 ? <div className="empty-state"><p>No alerts found.</p></div> : (
-          <table className="data-table">
-            <thead><tr><th>Type</th><th>Severity</th><th>Message</th><th>Source</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id} className="clickable-row" onClick={() => { setSelected(item); setShowDetail(true); }}>
-                  <td>{item.type}</td>
-                  <td><span className={getSeverityBadge(item.severity)}>{item.severity}</span></td>
-                  <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.message}</td>
-                  <td>{item.source || '-'}</td>
-                  <td><span className={getStatusBadge(item.status)}>{item.status}</span></td>
-                  <td>{item.created_at ? new Date(item.created_at).toLocaleString() : '-'}</td>
-                  <td><div className="action-btns" onClick={(e) => e.stopPropagation()}>
-                    {item.status === 'active' && <button className="btn btn-success btn-sm" onClick={() => handleAcknowledge(item)}><FiCheck /></button>}
-                    <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}><FiEdit2 /></button>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item)}><FiTrash2 /></button>
-                  </div></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <>
+            <table className="data-table">
+              <thead><tr><th>Type</th><th>Severity</th><th>Message</th><th>Source</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id} className="clickable-row" onClick={() => { setSelected(item); setShowDetail(true); }}>
+                    <td>{item.type}</td>
+                    <td><span className={getSeverityBadge(item.severity)}>{item.severity}</span></td>
+                    <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.message}</td>
+                    <td>{item.source || '-'}</td>
+                    <td><span className={getStatusBadge(item.status)}>{item.status}</span></td>
+                    <td>{item.created_at ? new Date(item.created_at).toLocaleString() : '-'}</td>
+                    <td><div className="action-btns" onClick={(e) => e.stopPropagation()}>
+                      {item.status === 'active' && <button className="btn btn-success btn-sm" onClick={() => handleAcknowledge(item)}><FiCheck /></button>}
+                      <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}><FiEdit2 /></button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item)}><FiTrash2 /></button>
+                    </div></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {pagination && pagination.totalPages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', padding: '16px' }}>
+                <button className="btn btn-outline btn-sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+                <span style={{ alignSelf: 'center', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                  Page {pagination.page} of {pagination.totalPages} ({pagination.total} total)
+                </span>
+                <button className="btn btn-outline btn-sm" disabled={page >= pagination.totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
