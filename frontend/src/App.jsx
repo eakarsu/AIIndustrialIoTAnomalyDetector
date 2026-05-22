@@ -14,6 +14,7 @@ import HealthScore from './pages/HealthScore';
 import Energy from './pages/Energy';
 import AdvancedAITools from './pages/AdvancedAITools';
 import CustomViewsPage from './pages/CustomViewsPage';
+import SensorCalibrationDrift from './pages/SensorCalibrationDrift';
 
 // === Batch 04 Gaps & Frontend Mounts ===
 import CfAgenticMaintenanceCoordinatorPredicti from './pages/CfAgenticMaintenanceCoordinatorPredicti';
@@ -35,6 +36,9 @@ import GapNoSlaTracking from './pages/GapNoSlaTracking';
 import GapNoWebhookSurface from './pages/GapNoWebhookSurface';
 import GapNoNotificationsModule0References from './pages/GapNoNotificationsModule0References';
 import GapNoWebsocketRealTimeTelemetryStream from './pages/GapNoWebsocketRealTimeTelemetryStream';
+
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -58,6 +62,9 @@ export default function App() {
   if (isLogin) {
     return (
       <Routes>
+        <Route path="/codex/custom-viz" element={<ProtectedRoute><CodexCustomVizFeature /></ProtectedRoute>} />
+        <Route path="/codex/operations" element={<ProtectedRoute><CodexOperationsFeature /></ProtectedRoute>} />
+
         <Route path="/" element={<Login />} />
       </Routes>
     );
@@ -78,6 +85,7 @@ export default function App() {
         <Route path="/energy" element={<ProtectedRoute><Energy /></ProtectedRoute>} />
         <Route path="/advanced-ai" element={<ProtectedRoute><AdvancedAITools /></ProtectedRoute>} />
         <Route path="/custom-views" element={<ProtectedRoute><CustomViewsPage /></ProtectedRoute>} />
+        <Route path="/sensor-calibration-drift" element={<ProtectedRoute><SensorCalibrationDrift /></ProtectedRoute>} />
           {/* // === Batch 04 Gaps & Frontend Mounts === */}
           <Route path="/cf-agentic-maintenance-coordinator-predicti" element={<CfAgenticMaintenanceCoordinatorPredicti />} />
           <Route path="/cf-federated-anomaly-detection-trained-on-a" element={<CfFederatedAnomalyDetectionTrainedOnA />} />
