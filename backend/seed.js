@@ -2,6 +2,8 @@ const pool = require('./db');
 const bcrypt = require('bcryptjs');
 
 async function seed() {
+  if (process.env.ALLOW_DESTRUCTIVE_DEMO_SEED !== 'true' || process.env.NODE_ENV === 'production') throw new Error('destructive demo seed is disabled');
+  if (!process.env.DEMO_ADMIN_PASSWORD) throw new Error('DEMO_ADMIN_PASSWORD is required for demo seeding');
   const client = await pool.connect();
   try {
     console.log('Dropping existing tables...');
@@ -149,7 +151,7 @@ async function seed() {
     `);
 
     console.log('Seeding users...');
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashedPassword = await bcrypt.hash(process.env.DEMO_ADMIN_PASSWORD, 10);
     await client.query(`
       INSERT INTO users (email, password, name, role) VALUES
       ('admin@iotplatform.com', $1, 'Admin User', 'admin'),

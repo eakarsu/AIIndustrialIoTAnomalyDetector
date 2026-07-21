@@ -2,7 +2,6 @@
 // tickets, plus AI-driven anomaly detection.
 // Audit: batch_04.md / AIIndustrialIoTAnomalyDetector / Custom Feature Suggestions #1
 const express = require('express');
-const fetch = require('node-fetch');
 const auth = require('../middleware/auth');
 const pool = require('../db');
 

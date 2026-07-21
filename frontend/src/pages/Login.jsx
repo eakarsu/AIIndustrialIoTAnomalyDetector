@@ -33,11 +33,6 @@ export default function Login() {
     }
   };
 
-  const handleQuickLogin = () => {
-    setEmail('admin@iotplatform.com');
-    setPassword('password123');
-  };
-
   return (
     <div className="login-page">
       <div className="login-card">
@@ -69,9 +64,6 @@ export default function Login() {
           </div>
           <button type="submit" className="login-btn primary" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-          <button type="button" className="login-btn quick" onClick={handleQuickLogin}>
-            Quick Login (Demo)
           </button>
         </form>
       </div>

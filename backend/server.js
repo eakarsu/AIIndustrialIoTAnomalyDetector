@@ -42,6 +42,7 @@ app.use('/api/timeseries', require('./routes/timeseries'));
 app.use('/api/anomaly-ai', require('./routes/anomalyDetectionAI'));
 app.use('/api/vibration-acoustic-ai', require('./routes/vibrationAcousticAI'));
 app.use('/api/sensor-calibration-drift', require('./routes/sensorCalibrationDrift'));
+app.use('/api/governed-iot', require('./middleware/auth'), require('./routes/governedIoT'));
 
 app.get('/api/health-check', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

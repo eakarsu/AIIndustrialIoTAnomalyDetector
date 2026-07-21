@@ -1,0 +1,13 @@
+name: governed-workflow
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node --test backend/test/*.test.js
+      - run: node --check backend/domain/iotPolicy.js && node --check backend/routes/governedIoT.js
+      - run: bash -n start.sh
+      - run: git diff --check HEAD

@@ -1,0 +1,12 @@
+const STAGES=Object.freeze(['detected','triaged','operator_review','maintenance_planned','resolved','verified','closed']);
+function validateTelemetry(input,lastSequence) {
+  for(const field of ['device_id','schema_version','metric','unit','recorded_at','sequence']) if(input[field]===undefined||input[field]===null||input[field]==='') throw new Error(`${field} is required`);
+  const value=Number(input.value), sequence=Number(input.sequence), recorded=new Date(input.recorded_at);
+  if(!Number.isFinite(value)||!Number.isInteger(sequence)||Number.isNaN(recorded.valueOf())) throw new Error('invalid telemetry value, sequence, or timestamp');
+  if(lastSequence!==null&&lastSequence!==undefined&&sequence<=Number(lastSequence)) throw new Error('out-of-order or duplicate sequence');
+  return {...input,value,sequence,recorded_at:recorded.toISOString(),gap:lastSequence===null||lastSequence===undefined?0:sequence-Number(lastSequence)-1};
+}
+function scoreAnomaly(value,{mean,stddev,threshold=3}) { if(![value,mean,stddev,threshold].every(v=>Number.isFinite(Number(v)))||Number(stddev)<=0) throw new Error('invalid anomaly baseline'); const z=Math.abs((Number(value)-Number(mean))/Number(stddev)); return {score:Math.round(z*1000)/1000,anomalous:z>=Number(threshold),advisory:true}; }
+function validateProvisioning({device_ref,asset_ref,credential_fingerprint,schema_version}) { if(!device_ref||!asset_ref||!credential_fingerprint||!schema_version) throw new Error('authenticated device identity is required'); if(credential_fingerprint.length<16) throw new Error('credential fingerprint is invalid'); return {device_ref,asset_ref,credential_fingerprint,schema_version}; }
+function validateTransition(from,to,context={}) { const allowed={detected:['triaged'],triaged:['operator_review'],operator_review:['maintenance_planned','closed'],maintenance_planned:['resolved'],resolved:['verified'],verified:['closed'],closed:[]}; if(!allowed[from]?.includes(to)) throw new Error('invalid anomaly transition'); if(['maintenance_planned','verified','closed'].includes(to)&&!['operator','maintenance_manager','admin'].includes(context.role)) throw new Error('operator approval required'); if(to==='maintenance_planned'&&!context.maintenanceReference) throw new Error('CMMS reference required'); if(to==='verified'&&!context.outcomeEvidence) throw new Error('operator outcome evidence required'); return true; }
+module.exports={STAGES,validateTelemetry,scoreAnomaly,validateProvisioning,validateTransition};

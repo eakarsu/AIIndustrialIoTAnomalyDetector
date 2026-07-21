@@ -1,7 +1,6 @@
 // Vibration + acoustic monitoring for early bearing/motor failure detection.
 // Audit: batch_04.md / AIIndustrialIoTAnomalyDetector / Custom Feature Suggestions #3
 const express = require('express');
-const fetch = require('node-fetch');
 const auth = require('../middleware/auth');
 const pool = require('../db');
 
