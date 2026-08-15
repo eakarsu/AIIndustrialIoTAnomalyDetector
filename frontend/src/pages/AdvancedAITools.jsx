@@ -1,3 +1,4 @@
+import GeneratedAiResponse from './GeneratedAiResponse';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FiCpu, FiTool, FiActivity, FiTruck } from 'react-icons/fi';
@@ -323,9 +324,7 @@ export default function AdvancedAITools() {
       {result && (
         <details style={{ marginTop: 12 }}>
           <summary style={{ cursor: 'pointer', fontSize: 13, color: 'var(--text-secondary, #6b7280)' }}>Raw response</summary>
-          <pre style={{ background: '#0f172a', color: '#e2e8f0', padding: 14, borderRadius: 8, overflow: 'auto', fontSize: 12, maxHeight: 360 }}>
-            {JSON.stringify(result, null, 2)}
-          </pre>
+          <GeneratedAiResponse response={result} />
         </details>
       )}
     </div>

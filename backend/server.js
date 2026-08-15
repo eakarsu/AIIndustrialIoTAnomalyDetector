@@ -65,6 +65,7 @@ app.use('/api/gap-no-websocket-real-time-telemetry-stream', route_gap_no_websock
 
 // === Custom Views (Industrial Views) — mounted before any 404 handler ===
 app.use('/api/custom-views', require('./routes/customViews'));
+app.use('/api', require('./routes/generatedFeatures').router);
 
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
