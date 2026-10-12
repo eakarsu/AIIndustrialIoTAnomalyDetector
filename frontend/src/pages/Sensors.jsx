@@ -40,12 +40,12 @@ export default function Sensors() {
   const loadItems = async () => {
     try {
       const data = await apiCall(`/sensors?page=${page}&limit=${limit}`);
-      if (data && data.data) {
+      if (Array.isArray(data?.data)) {
         setItems(data.data);
         setPagination(data.pagination);
       } else if (Array.isArray(data)) {
         setItems(data);
-      }
+      } else setItems([]);
     } catch { toast.error('Failed to load sensors'); }
     finally { setLoading(false); }
   };

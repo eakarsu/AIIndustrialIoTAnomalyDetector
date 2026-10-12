@@ -37,8 +37,8 @@ export default function Alerts() {
   const loadItems = async () => {
     try {
       const data = await apiCall(`/alerts?page=${page}&limit=${limit}`);
-      if (data && data.data) { setItems(data.data); setPagination(data.pagination); }
-      else if (Array.isArray(data)) setItems(data);
+      if (Array.isArray(data?.data)) { setItems(data.data); setPagination(data.pagination); }
+      else setItems(Array.isArray(data) ? data : []);
     }
     catch { toast.error('Failed to load alerts'); }
     finally { setLoading(false); }

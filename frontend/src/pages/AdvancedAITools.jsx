@@ -28,6 +28,16 @@ const TABS = [
   { id: 'supply-chain', label: 'Supply-Chain Disruption', icon: FiTruck },
 ];
 
+export const supplyPresets = [
+  { label: 'Bearing shortage', parts: 'Bearing 6204 | vendor=SKF | lead_time_days=21 | sole_source=false\nBearing 6205 | vendor=NSK | lead_time_days=28 | sole_source=false', horizon: 60, region: 'Northeast US', signals: 'Distributor reports longer bearing replenishment windows\nReview open equipment anomalies before ordering' },
+  { label: 'Drive controller', parts: 'Variable frequency drive | vendor=ABB | lead_time_days=45 | sole_source=true\nPower module | vendor=Schneider Electric | lead_time_days=30 | sole_source=false', horizon: 90, region: 'Midwest US', signals: 'Supplier maintenance window may affect drive shipments\nConfirm alternative controller compatibility' },
+  { label: 'Pump spares', parts: 'Mechanical seal kit | vendor=John Crane | lead_time_days=35 | sole_source=false\nPump impeller | vendor=Goulds | lead_time_days=56 | sole_source=true', horizon: 120, region: 'Southeast US', signals: 'Seasonal demand may constrain pump spares\nVerify installed pump model before procurement' },
+];
+
+export function presetEquipmentId(currentId, equipment, index) {
+  return currentId || (equipment.length ? String(equipment[index % equipment.length].id) : '');
+}
+
 export default function AdvancedAITools() {
   const [tab, setTab] = useState('maintenance');
   const [equipment, setEquipment] = useState([]);
@@ -121,6 +131,14 @@ export default function AdvancedAITools() {
     setError(null);
   };
 
+  const equipmentPresets = <div className="ai-actions" style={{ marginBottom: 16 }}>
+    {[0, 1, 2].map((index) => <button key={index} type="button" className="btn btn-secondary" disabled={loading || !equipment.length} onClick={() => {
+      // An existing selection is a real record reference and must survive preset changes.
+      setEquipmentId(presetEquipmentId(equipmentId, equipment, index));
+    }}>Use {['first', 'second', 'third'][index]} available equipment</button>)}
+    {!equipment.length && <span role="status">Load an equipment record before using these examples.</span>}
+  </div>;
+
   return (
     <div className="page-content">
       <div className="page-header">
@@ -164,6 +182,7 @@ export default function AdvancedAITools() {
               urgency, action, tasks, parts, downtime estimate, deferred risk, and confidence.
             </p>
             <form onSubmit={submitMaintenance}>
+              {equipmentPresets}
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Equipment *</label>
                 <select
@@ -207,6 +226,7 @@ export default function AdvancedAITools() {
               the last 30 focal anomalies and the last 60 fleet-wide anomalies.
             </p>
             <form onSubmit={submitCorrelation}>
+              {equipmentPresets}
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Focal Equipment *</label>
                 <select
@@ -249,6 +269,7 @@ export default function AdvancedAITools() {
               fleet's open anomalies + upcoming maintenance pressure.
             </p>
             <form onSubmit={submitSupplyChain}>
+              <div className="ai-actions" style={{ marginBottom: 16 }}>{supplyPresets.map((preset) => <button key={preset.label} type="button" className="btn btn-secondary" disabled={loading} onClick={() => { setPartsText(preset.parts); setHorizonDays(preset.horizon); setRegion(preset.region); setSignalsText(preset.signals); }}>{preset.label}</button>)}</div>
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
                   Parts (one per line — &quot;name | vendor=X | lead_time_days=N | sole_source=true&quot;) *

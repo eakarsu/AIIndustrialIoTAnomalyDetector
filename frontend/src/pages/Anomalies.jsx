@@ -102,16 +102,16 @@ export default function Anomalies() {
   const loadItems = async () => {
     try {
       const data = await apiCall(`/anomalies?page=${page}&limit=${limit}`);
-      if (data && data.data) { setItems(data.data); setPagination(data.pagination); }
-      else if (Array.isArray(data)) setItems(data);
+      if (Array.isArray(data?.data)) { setItems(data.data); setPagination(data.pagination); }
+      else setItems(Array.isArray(data) ? data : []);
     } catch { toast.error('Failed to load anomalies'); }
     finally { setLoading(false); }
   };
   const loadRefs = async () => {
     try {
       const [s, e] = await Promise.all([apiCall('/sensors?limit=100'), apiCall('/equipment')]);
-      setSensors(Array.isArray(s) ? s : (s && s.data ? s.data : []));
-      setEquipment(Array.isArray(e) ? e : (e && e.data ? e.data : []));
+      setSensors(Array.isArray(s) ? s : Array.isArray(s?.data) ? s.data : []);
+      setEquipment(Array.isArray(e) ? e : Array.isArray(e?.data) ? e.data : []);
     } catch {}
   };
 

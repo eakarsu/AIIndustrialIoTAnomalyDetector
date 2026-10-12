@@ -9,7 +9,7 @@ export default function SensorCalibrationDrift() {
     <div>
       <h1>Sensor Calibration Drift Monitor</h1>
       <p>Detects sensors whose offset drift can create false anomaly signals.</p>
-      {data?.sensors?.map((s) => <section key={s.sensor} className="card"><h2>{s.sensor}</h2><p>{s.status} - drift {s.drift_score}</p></section>)}
+      {(Array.isArray(data?.sensors) ? data.sensors : []).map((s) => <section key={s.sensor} className="card"><h2>{s.sensor}</h2><p>{s.status} - drift {s.drift_score}</p></section>)}
     </div>
   );
 }

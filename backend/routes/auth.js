@@ -65,6 +65,30 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Sign in with the existing demo account without sending its password to the browser.
+router.post('/demo-login', async (_req, res) => {
+  if (process.env.ENABLE_DEMO_CREDENTIAL_AUTOFILL !== 'true') {
+    return res.status(503).json({ error: 'Demo login is not enabled for this installation.' });
+  }
+  const email = process.env.DEMO_ADMIN_EMAIL;
+  const password = process.env.DEMO_ADMIN_PASSWORD;
+  if (!email || !password) {
+    return res.status(503).json({ error: 'Demo account credentials are not configured.' });
+  }
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(503).json({ error: 'The configured demo account is unavailable.' });
+    }
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role, tenant_id: user.tenant_id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    return res.json({ user: { id: user.id, email: user.email, name: user.name, role: user.role, created_at: user.created_at }, token });
+  } catch (err) {
+    console.error('Demo login error:', err);
+    return res.status(500).json({ error: 'Demo login is temporarily unavailable.' });
+  }
+});
+
 // GET /api/auth/me
 router.get('/me', auth, async (req, res) => {
   try {

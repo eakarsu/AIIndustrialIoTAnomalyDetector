@@ -34,8 +34,9 @@ export default function RootCause() {
   };
   const loadRefs = async () => {
     try {
-      const [a, e] = await Promise.all([apiCall('/anomalies'), apiCall('/equipment')]);
-      setAnomalies(Array.isArray(a) ? a : []); setEquipment(Array.isArray(e) ? e : []);
+      const [a, e] = await Promise.all([apiCall('/anomalies?limit=100'), apiCall('/equipment')]);
+      setAnomalies(Array.isArray(a) ? a : Array.isArray(a?.data) ? a.data : []);
+      setEquipment(Array.isArray(e) ? e : []);
     } catch {}
   };
 

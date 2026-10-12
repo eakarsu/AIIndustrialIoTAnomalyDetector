@@ -1,3 +1,4 @@
+import AIReportLibrary from "./components/AIReportLibrary";
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -71,7 +72,7 @@ export default function App() {
   }
 
   return (
-    <AppLayout>
+    <><AIReportLibrary floating /><AppLayout>
       <Routes>
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/sensors" element={<ProtectedRoute><Sensors /></ProtectedRoute>} />
@@ -109,6 +110,6 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-    </AppLayout>
+    </AppLayout></>
   );
 }
